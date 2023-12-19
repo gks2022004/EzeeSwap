@@ -85,7 +85,7 @@ function Swap(props) {
 
   async function fetchPrices(one, two){
 
-      const res = await axios.get(`https://ezeeswap.up.railway.app/tokenPrice`, {
+      const res = await axios.get(`https://ezeeswap-production.up.railway.app/tokenPrice`, {
         params: {addressOne: one, addressTwo: two}
       })
 
