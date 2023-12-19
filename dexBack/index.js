@@ -10,30 +10,40 @@ app.use(express.json());
 
 app.get("/tokenPrice", async (req, res) => {
 
-  const {query} = req;
+  const { query } = req;
 
-  const responseOne = await Moralis.EvmApi.token.getTokenPrice({
-    address: query.addressOne
-  })
+  try {
+    console.log("Fetching token prices...");
+    
+    const responseOne = await Moralis.EvmApi.token.getTokenPrice({
+      address: query.addressOne
+    });
 
-  const responseTwo = await Moralis.EvmApi.token.getTokenPrice({
-    address: query.addressTwo
-  })
+    const responseTwo = await Moralis.EvmApi.token.getTokenPrice({
+      address: query.addressTwo
+    });
 
-  const usdPrices = {
-    tokenOne: responseOne.raw.usdPrice,
-    tokenTwo: responseTwo.raw.usdPrice,
-    ratio: responseOne.raw.usdPrice/responseTwo.raw.usdPrice
+    console.log("Token prices fetched successfully.");
+
+    const usdPrices = {
+      tokenOne: responseOne.raw.usdPrice.toString(),
+      tokenTwo: responseTwo.raw.usdPrice.toString(),
+      ratio: responseOne.raw.usdPrice / responseTwo.raw.usdPrice
+    }
+
+    console.log("Sending response:", usdPrices);
+    return res.status(200).json(usdPrices);
+
+  } catch (error) {
+    console.error("Error fetching token prices:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-  
-
-  return res.status(200).json(usdPrices);
 });
 
 Moralis.start({
   apiKey: process.env.MORALIS_KEY,
-}).then(() => {
+}).then((data) => {
   app.listen(port, () => {
-    console.log(`Listening for API Calls`);
+    console.log(`Server is running`);
   });
 });
